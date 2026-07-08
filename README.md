@@ -105,4 +105,48 @@ questo deve aggiungere n zeri alla stringa ( a destra ), l operazione non modifi
 #### Operator>>=
 deve togliere n cifre a destra, se finiscono le cifre ritorna zero
 bigint &operator>>=(const bigint &other);
-quindi other ti dice quante cifre togliere a this
+quindi other ti dice quante cifre togliere a this, va fatto un mini atoi e poi chiamata la versione unsigned int dello stesso metodo. questo controlla che n non "esaurisca" tutta la stringa ed in caso ritorna zero
+altrimenti chiama resize(). Resize diminuisce la stringa di n char
+
+#### Operator >> 
+
+differisce da >>= semplicemente perché non va a modificare l'oggetto che la chiama, quindi va a fare le modifiche su un oggetto tmp che poi restituirá 
+
+### vect2
+
+#### Cosa chiede il subject
+
+Il subject ci chiede di creare una classe vect2 che contiene 2 int ed agisca come vector. Dobbiamo fare l'overload di stampa, addizione, sottrazione e moltiplicazione come se fosse uno scalare. Inoltre dobbiamo implementare anche l'overload di [] per accedere agli elementi senza l'obbligo di controllare se l'indice sia corretto. La classe deve rappresentare in sostanza un vettore matematico {x,y}.
+Da main poi abbiamo i classici overload di pre e post incremento/decremento, +=, -=, *=, == e !=.
+
+Sorvolo sul ripasso degli overload perché l'ho giá fatto in bigint
+
+### struttura della classe
+
+Abbiamo due opzioni: o creare due int come attributo, oppure un semplice array di int che semplifica ulteriormente l'operator[]. Opto per quest'ultima soluzione. Avendo la necessitá di cambiare valore agli elementi dell'attributo della classe anche dal main, ho messo l'array in public.
+
+### costruttori
+
+vect2() inizializza l'array a 0, 0, gli altri sono banali da spiegare
+
+### operator[]
+
+[] nel main viene usato per due operazioni. Entrambe accedono all'n elemento dell'array di int. Uno peró ha un vect2 const in ingresso e impone la non modifica di quanto restituisce, l'altro no. Quindi abbiamo bisogno di due firme in modo da gestire entrambi i casi.
+Non dovendo gestire gli out of range, la funzione semplicemente restituisce l'ennesimo elemento e basta.
+
+### operator == e !=
+
+controllano se entrambi i valori sono == o != e restituiscono un bool, facile facile
+
+### operator += ( e -= e *= )
+Come prima: devono modificare l'oggetto quindi ritorneranno una reference a this. Inoltre dobbiamo considerare in alcuni casi l'overload accetterá un int ( ad esempio *= ), in altri solo un oggetto. il principio é sostanzialmente lo stesso peró
+
+Da adesso spiego solo alcuni operandi che hanno una sorta di eccezione.
+
+### operator-
+
+ne abbiamo di due tipi. Uno unario e l'altro binario. Il binario segue la logica di tutti gli altri operator. Quello unario invece non prende parametri ed il suo scopo é quello di moltiplicare per -1 l'array di int. 
+
+### operator*
+
+Ne abbiamo anche qui due. Uno dentro la classe e corrisponde alla classica moltiplicazione fra due oggetti. Quindi prende come parametro other. L'altro invece serve a gestire il 3 * v2 (o quello che é). Va inserito fuori dalla classe perché in questo caso l'operando di sinistra é un int, e non un oggetto, quindi non posso inserirlo come metodo della classe. 
