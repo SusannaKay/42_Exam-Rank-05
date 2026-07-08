@@ -30,10 +30,11 @@ class bigint {
         bigint &operator++(); //pre-inc
         bigint operator++(int); //post-inc
 
-        // bigint &operator<<=(unsigned int n);
-        // bigint &operator>>=(unsigned int n);
-        // bigint operator>>(unsigned int n) const;
-        // bigint operator<<(unsigned int n) const;
+        bigint &operator<<=(unsigned int n);
+        bigint &operator>>=(unsigned int n);
+        bigint &operator>>=(const bigint &n);
+        bigint operator>>(unsigned int n) const;
+        bigint operator<<(unsigned int n) const;
 };
 
 std::ostream &operator<<(std::ostream &os, const bigint &a);

@@ -2,8 +2,6 @@
 
 ## Parte 1
 
-
-
 ### BigInt
 
 #### Cosa chiede il subject
