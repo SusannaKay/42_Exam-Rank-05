@@ -150,3 +150,83 @@ ne abbiamo di due tipi. Uno unario e l'altro binario. Il binario segue la logica
 ### operator*
 
 Ne abbiamo anche qui due. Uno dentro la classe e corrisponde alla classica moltiplicazione fra due oggetti. Quindi prende come parametro other. L'altro invece serve a gestire il 3 * v2 (o quello che é). Va inserito fuori dalla classe perché in questo caso l'operando di sinistra é un int, e non un oggetto, quindi non posso inserirlo come metodo della classe. 
+
+### polyset
+
+nell'esercizio ci vengono date alcune classi:
+bag : classe astratta
+searchable_bag : una implementazione di bag con il metodo che ci permette di cercare nella bag
+tree_bag: implementazione di bag con una struttura dati binary search tree 
+array_bag: implementazione di bag con un array come struttura dati
+
+il subject ci chiede implementare due extra classi:
+searchable_array_bag 
+searchable_tree_bag 
+che ereditano dalle rispettive classi ed implementano la funzione di searchable_bag 
+
+poi ci chiede di implementare una classe set, che wrappa searchable_bag in un set ( non ammette duplicati ). 
+
+#### bag
+é la classe piú astratta, lei promette tre metodi
+insert
+print
+clear
+ma non dice come
+
+#### array_bag
+ha giá implementato i tre metodi ed aggiunte 2 attributi: l- array ed il size
+
+#### tree_bag
+stessa cosa di array, ma al posto dell'array definisce la struct tree
+
+#### searchable_bag
+
+promette solo il metodo has, che andrá implementato nelle due nuove classi che dobbiamo creare a partire da array e tree bag
+
+#### searchable_array_bag
+has sará un banale for loop all interno dell array per cercare l elemento
+
+#### searchable_tree_bag
+
+has diventa piú complesso da implementare. il tree bag di bse crea una struttura simile a questa 
+
+        8
+      /   \
+     3     10
+    / \      \
+   1   6      14
+
+la regola di base é 
+se nodo in cui sto é maggiore di quello che sto cercando, vado a sinistra
+se nodo in cui sto é minore di quello che sto cercando, vado a destra 
+quindi
+se cerco 6:
+parto da 8
+6 < 8 → vado a sinistra
+
+sono su 3
+6 > 3 → vado a destra
+
+sono su 6
+trovato
+
+current = tree
+
+while current non è NULL
+{
+    se value == current->value
+        return true
+
+    se value < current->value
+        current = current->l
+    altrimenti
+        current = current->r
+}
+
+return false
+
+#### set
+
+set é un bag senza duplicati, ci prendiamo la searchable_bag in modo da avere il metodo has, ed insert andrá implementato col controllo se il numero é giá presente o meno. 
+
+quindi in insert(int n) mettiamo un controllo, e su insert (int * items, int size) richiameremo insert per ogni elemento dell-array di int. 
