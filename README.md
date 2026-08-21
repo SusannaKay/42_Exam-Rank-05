@@ -230,3 +230,102 @@ return false
 set é un bag senza duplicati, ci prendiamo la searchable_bag in modo da avere il metodo has, ed insert andrá implementato col controllo se il numero é giá presente o meno. 
 
 quindi in insert(int n) mettiamo un controllo, e su insert (int * items, int size) richiameremo insert per ogni elemento dell-array di int. 
+
+## Parte 2
+
+### Game Of Life 
+
+funzioni ammesse: atoi, read, putchar, malloc, calloc, realloc, free
+
+#### Scopo dell'esercizio
+
+Devo creare una versione di Game Of Life di Conway.
+
+comando da terminale:
+
+`./life width height iterations`
+
+crea una griglia width x height e deve riprodurre le regole di GoL per n iterazioni. La configurazione iniziale viene estrapolata dai comandi `wasd` iniziali. 
+Idealmente  dobbiamo immaginarci una penna che parte dall'angolo in alto a sinistra della griglia. `wasd` spostano la penna mentre `x` alterna lo stato della penna da alzata ad abbassata e viceversa.
+
+Se la penna é abbassata, la cella viene marcata come viva. Una volta terminata la lettura dei comandi, la griglia rappresenta la generazione iniziale da cui poi partiranno le n iterazioni. 
+
+Ad ogni iterazione ogni cella osserva le 8 celle adiacenti ( verticalmente, orizzontalmente, diagonalmente) ed il suo stato nella generazione successiva viene determinato dal numero di celle vicine "vive".
+
+La cella viva viene segnata con `0`
+La cella morta viene segnata con ` ` ( spazio )
+
+esempio pratico
+
+'echo 'dxss' | ./life 3 3 0'
+
+crea una griglia 3 x 3 
+
+P..
+...
+...
+
+P é la posizione iniziale della penna, parte da alzata. Con le istruzioni passate sullo std_input la penna fa questo:
+
+- va a destra ( non disegna perché é alzata )
+- abbassa la penna
+- la cella corrente diventa viva
+
+.0.
+...
+...
+- la penna scende ( e disegna )
+- la penna scende di nuovo ( e disegna )
+
+risultato finale: 
+
+.0.
+.0.
+.0.
+
+essendoci state 0 iterazioni, l output sará:
+´´´
+ 0 
+ 0 
+ 0 
+```
+
+Dopo aver letto i comandi, bisogna eseguire le regole di GoL
+
+##### regole 
+
+cellula viva:
+- 2 o 3 vicini -> vive
+- altrimenti muore
+cellula morta:
+- esattamente 3 vicini -> torna in vita
+- altrimenti rimane morta
+
+tutte le celle devono essere aggiornate contemporaneamente, quindi ogni generazione deve essere calcolata a partire dalla config precedente completa, senza modificare la griglia mentre la si sta analizzando.
+
+Ipotizziamo 1 iterazione:
+
+la cella in [0][0] ha una sola cella vicina, quindi muore
+la cella in [0][1] ha una sola cella vicina, quindi muore
+La cella in [1][0] ha tre celle vicine, quindi resuscita
+la cella in [1][1] ha due celle vicine vive, quindi vive
+la cella in [1][2] ha 3 celle vicine, quindi resuscita
+la cella in [2][0] ha 2 celle vicine, quindi rimane morta
+la cella in [2][1] ha una sola cella vicina, quindi muore
+la cella in [2][2] ha due celle vicine, quindi rimane morta 
+
+risultato finale dopo 1 iterazione
+```
+   
+000
+   ```
+
+#### struttura logica del programma
+
+1. leggere i parametri passati ( widht, height e iterazioni )
+2. creiamo la griglia vuota
+3. leggiamo i comandi ed iniziamo a disegnare le cellule vive
+4. simuliamo le iterazioni e stampiamo il risultato
+
+abbiamo bisogno sostanzialmente di due matrici perché una serve da reference per disegnare il risultato, altrimenti la situazione cambia in continuazione e non abbiamo un risultato basato sullo stato delle celle precedente all iterazione attuale
+

@@ -35,10 +35,6 @@ class vect2 {
 		const bool operator!=(const vect2 &other);
 		int &operator[](int n); // assegnazione valore
 		const int &operator[](int n) const; // lettura valore
-
-
-		
-
 };
 std::ostream &operator<<(std::ostream &os,const vect2 &other);
 vect2 operator*(int n, const vect2 &other);
