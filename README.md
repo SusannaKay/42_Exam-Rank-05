@@ -284,11 +284,10 @@ risultato finale:
 .0.
 
 essendoci state 0 iterazioni, l output sará:
-´´´
  0 
  0 
  0 
-```
+
 
 Dopo aver letto i comandi, bisogna eseguire le regole di GoL
 
@@ -315,10 +314,9 @@ la cella in [2][1] ha una sola cella vicina, quindi muore
 la cella in [2][2] ha due celle vicine, quindi rimane morta 
 
 risultato finale dopo 1 iterazione
-```
-   
+
 000
-   ```
+
 
 #### struttura logica del programma
 
@@ -329,3 +327,165 @@ risultato finale dopo 1 iterazione
 
 abbiamo bisogno sostanzialmente di due matrici perché una serve da reference per disegnare il risultato, altrimenti la situazione cambia in continuazione e non abbiamo un risultato basato sullo stato delle celle precedente all iterazione attuale
 
+### BSQ
+
+funzioni ammesse: malloc, calloc, realloc, free, fopen, fclose, getline, fscanf, fputs, fprintf, stderr, stdout, stdin, errno
+
+#### Scopo dell'esercizio
+
+Il programma deve leggere una mappa. Il file verrá passato o come argomento argv, oppure dallo stdin. 
+Il file della mappa contiene un header dove vengono dichiarati in ordine: 
+
+- Il numero delle righe della mappa
+- Il char che segna la posizione vuota
+- Il char che segna l'ostacolo
+- Il char di riempimento
+
+La mappa inizialmente sará composta da char vuoti e char ostacolo.
+
+Data una mappa valida, dobbiamo trovare il quadrato piú grande fillabile con il char di riempimento. Se esistono piú quadrati della stessa grandezza, dobbiamo stampare quello posizionato piú in alto. A paritá di altezza, quello piú a sinistra.
+
+
+#### Panoramica funzioni ammesse
+
+- Per la gestione della memoria abbiamo a disposizione `malloc, calloc, realloc, free`
+
+- Gestione dei file e input:
+
+Per leggere da un file passato come argomento:
+
+FILE *fopen(const char *filename, const char *mode);
+
+Si prende argv[1], il mode sará impostato su read ( quindi "r") e ritornerá un puntatore di tipo FILE, che sará sostanzialmente il nostro segnalibro all'interno del file. 
+
+Se fopen fallisce (perché il file non esiste o mancano i permessi), ritorna `NULL` - quindi stamperemo "map error\n", ed imposta errno su ENOENT se il file non esiste. Non ci frega granché per l'esercizio, ma é sempre utile saperlo.
+
+fclose(FILE *stream); 
+
+Quando finiamo con la lettura del file dobbiamo chiuderlo, altrimenti file descriptor leak. va chiamato sempre, anche in caso di errori. 
+
+stdin
+
+Ok non é propriamente una funzione ma un flusso giá aperto dal sistema, lo useremo in caso non fossero stati passati argomenti. Il flusso é dello stesso tipo di fopen ( FILE *).
+
+- Lettura file:
+
+getline lo conosciamo. Arriva fino a newline o fino alla fine del file. Se impostiamo il buffer a NULL e la dimensione a 0, getline utilizza malloc per allocare l'esatta quantitá di memoria necessaria per contenere la riga, se quella successiva é piú lunga, userá realloc. Insomma gestisce tutto lui. 
+
+
+int fscanf(FILE *stream, const char *format, ...);
+
+fscanf é interessante perché legge i dati da un flusso e li analizza secondo un formato specifico. Nel chiamarla le diciamo esattamente cosa ci aspettiamo dalla riga letta e le salva in variabili di cui passiamo l'indirizzo.
+
+Esempio:
+
+fscanf(stream, "%d %c %c %c", &linee, &vuoto, &ostacolo, &pieno)
+
+In sostanza gli stiamo dicendo: da stream devi aspettarti un int e 3 char e me li devi salvare in linee, vuoto, ostacolo, pieno. Ovviamente queste sono variabili che abbiamo creato prima di chiamarla, e gli passiamo l`indirizzo di memoria. 
+
+RITORNO:
+fscanf ritorna il numero di elementi assegnati con successo. Quindi a fine chiamata dobbiamo verificare che ritorni esattamente 4. 
+oppure EOF che solitamente é -1. 
+
+Quando fscanf raggiunge l'ultimo carattere, lascia "fuori" la newline che quindi dovremo consumare prima di procedere a leggere il resto della mappa 
+
+- Funzioni di stampa
+
+fputs(const char *s, FILE *stream);
+
+stampa una strissa nel flusso, senza formattazione. Ha senso usarla per stampare l'errore su stderr, o le righe della mappa risolta su stdout
+
+fprintf(FILE *stream, const char *format, ...);
+
+rispetto alla classica printf ti permette semplicemente di scegliere su quale flusso stampare
+
+#### Logica del programma
+
+1. Parsing e validazione
+2. Memorizzazione
+3. Algoritmo
+
+1. Parsing e validazione 
+
+Header: 
+- non deve contenere caratteri uguali
+- sono tutti char printabili 
+- char_num == 4
+
+Mappa:
+- Tutte le righe devono avere la stessa lunghezza
+- Deve esserci almeno una riga e almeno un quadrato
+- Alla fine di ogni riga abbiamo una newline
+- Vengono usati solo i char indicati nell'header
+
+Se il parsing fallisce per mappa invalida dovremo ritornare su stderr "map error\n"
+
+2. Memorizzazione
+
+La cosa piú sensata é usare: 
+- una struct ( t_map ) in cui ci salviamo tutto ció che ci serve ( elementi header ), matrice bidimensionale di char dove salvare la mappa 
+
+- una seconda struct (t_square ) per tenere in memoria il quadrato piú grande trovato finora. Ci salveremo al suo interno la grandezza (int size ) e la sua posizione ( int row, int col). A livello di algoritmo ci sará un controllo se la size del nuovo quadrato é > di size salvata, se cosí fosse, sostituisce. Se é uguale o inferiore, non fará nulla. In questo modo, il quadrato salvato sará sempre il primo effettivamente trovato.
+
+3. Algoritmo 
+
+Ogni cella della mappa deve rispondere ad una domanda: se io fossi l'angolo in basso a destra di un quadrato, quanto sarebbe grande questo quadrato? 
+
+Per rispondere a questa domanda basta guardare i valori di 3 celle adiacenti:
+- quella sopra (i - 1, j)
+- quella a sinistra (i, j - 1)
+- quella a in alto a sinistra ( i - 1, j - 1)
+
+Creiamo una matrice numerica di supporto, delle stesse dimensioni della mappa, e la compiliamo dall alto verso il basso, da sinistra verso destra applicando 3 regole:
+
+1. Gli ostacoli assumono valore 0 
+2. Tutte le celle sui bordi a sinistra hanno valore 1 
+3. Per tutte le altre celle vuote, il loro valore é uguale al numero piú piccolo tra le celle adiacenti da controllare + 1. 
+
+Per me é stregoneria, ma a quanto pare funziona.
+
+esempio:
+
+mappa iniziale:
+...
+...
+..o
+...
+
+primo step numerica ( celle bordi a sinistra ):
+
+1111
+1???
+1???
+1???
+
+step 2: applicazione regole
+
+1111
+1222
+1???
+1???
+
+(1,1) i suoi vicini sono tutti 1, quindi il minimo é 1. Valore cella 1 + 1.
+(1,2) i suoi vicini sono 1, 1 e 2. Il minimo é 1. Valore della cella 1 + 1.
+(1,3) i suoi vicini sono 1, 1 e 2. Il minimo é 1. Valore della cella 1 + 1.
+
+Andiamo avanti
+
+1111
+1222
+1201
+1???
+
+(2,1) i suoi vicini sono 1, 1 e 2. Il minimo é 1. Valore della cella 1 + 1.
+(2,2) questa cella é un ostacolo nella mappa iniziale, quindi il suo valore é 0
+(2,3) Il valore minimo dei suoi vicini é 0, il suo valore é 0 + 1
+
+Ultimo passaggio:
+
+1111
+1222
+1201
+1211
+
+Mentre compiliamo la matrice ci salviamo la struttura t_square solo se il numero inserito é strettamente maggiore di quello salvato in precedenza, in questo caso il numero piú alto in questione sará 2.
