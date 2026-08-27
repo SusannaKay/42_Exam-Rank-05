@@ -111,6 +111,7 @@ void fillBoard(t_grid *game){
 	}
 }
 void printBoard(char **matrix){
+	putchar('\n');
 	for(int i = 0; matrix[i] != NULL ; i++)
 	{
 		for (int j = 0; matrix[i][j] != '\0'; j++)

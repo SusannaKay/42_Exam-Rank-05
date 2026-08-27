@@ -384,6 +384,20 @@ Risultato finale dopo 1 iterazione:
 
 Abbiamo bisogno sostanzialmente di due matrici perché una serve da reference per disegnare il risultato, altrimenti la situazione cambia in continuazione e non abbiamo un risultato basato sullo stato delle celle precedente all'iterazione attuale.
 
+La struct oltre a salvarsi gli argomenti passati e le due matrici, si salverà anche la posizione della penna (p_x, p_y).
+
+Inizializziamo la struct
+Controlliamo che ogni char sia un digit
+Poi atoi ed inizializzo le due matrici.
+Con clear_matrix imposto ogni char a spazio e facciamo partire la penna dalla posizione (0,0).
+Spostiamo la penna in base ai char letti dallo stdin e modifichiamo la posizione o lo stato della penna in base ai char letti, controllando sempre di non stare alla fine o all'inizio della matrice.
+se la penna è abbassata, impostiamo il char a '0'.
+poi per n iterazioni chiamiamo play.
+Su ogni cella di board contiamo le cellule vive in tutte le direzioni con countAlive ed in base a questo, modifichiamo la cella in next
+
+Ci copiamo il risultato di next in Board e puliamo next. 
+Alla fine delle iterazioni stampiamo e liberiamo tutto.
+
 ### BSQ
 
 Funzioni ammesse: `malloc, calloc, realloc, free, fopen, fclose, getline, fscanf, fputs, fprintf, stderr, stdout, stdin, errno`.
