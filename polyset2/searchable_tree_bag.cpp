@@ -28,9 +28,9 @@ bool searchable_tree_bag::has(int n) const {
         if (current->value == n)
             return true;
         else if(current->value > n)
-            current = current->r;
-        else 
             current = current->l;
+        else 
+            current = current->r;
     }
     
     return false;

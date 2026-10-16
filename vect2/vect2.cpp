@@ -33,7 +33,7 @@ vect2 &vect2::operator=(const vect2 &other)
 
 vect2::~vect2(){}
 
-vect2 vect2::operator-(const vect2 &other){
+vect2 vect2::operator-(const vect2 &other) const{
 	vect2 tmp(*this);
 	tmp -= other;
 	return tmp;
@@ -67,10 +67,7 @@ vect2 &vect2::operator*=(int n){
 	_v[1] = _v[1] * n;
 	return (*this);
 }
-bool vect2::operator==(vect2 &other){
-	return(_v[0]==other._v[0] && _v[1] == other._v[1]);
-}
-const bool vect2::operator==(const vect2 &other){
+bool vect2::operator==(const vect2 &other) const{
 	return(_v[0]==other._v[0] && _v[1] == other._v[1]);
 }
 vect2 &vect2::operator++(){
@@ -96,11 +93,8 @@ vect2 vect2::operator--(int){
 	_v[1] -= 1;
 	return(tmp);
 }
-bool vect2::operator!=(vect2 &other){
-	return(_v[0]!=other._v[0] && _v[1] != other._v[1]);
-}
-const bool vect2::operator!=(const vect2 &other){
-	return(_v[0]!=other._v[0] && _v[1] != other._v[1]);
+bool vect2::operator!=(const vect2 &other) const{
+	return (!(*this == other));
 }
 
 int &vect2::operator[](int n) {

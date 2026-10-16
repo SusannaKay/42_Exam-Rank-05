@@ -19,20 +19,18 @@ class vect2 {
 
 		vect2 operator+(const vect2 &other) const;
 		vect2 operator-() const; // meno unario
-		vect2 operator-(const vect2 &other); // meno binario
+		vect2 operator-(const vect2 &other) const; // meno binario
 		vect2 operator*(int n) const;
 		vect2 &operator+=(const vect2 &other);
 		vect2 &operator-=(const vect2 &other);
 		vect2 &operator*=(int n);
 
-		bool operator==(vect2 &other);
-		const bool operator==(const vect2 &other);
+		bool operator==(const vect2 &other) const;
 		vect2 &operator++(); // pre incr
 		vect2 operator++(int); //post incr
 		vect2 &operator--();
 		vect2 operator--(int);
-		bool operator!=(vect2 &other);
-		const bool operator!=(const vect2 &other);
+		bool operator!=(const vect2 &other) const;
 		int &operator[](int n); // assegnazione valore
 		const int &operator[](int n) const; // lettura valore
 };
