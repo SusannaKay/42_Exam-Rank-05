@@ -97,8 +97,8 @@ t_square *find_square(t_map *map, t_square *square){
 		{
 			for (int j = 0; j < i; j++)
 			{
-				free(new_grid[i]);
-				new_grid[i] = NULL;
+				free(new_grid[j]);
+				new_grid[j] = NULL;
 			}
 			free(new_grid);
 			new_grid = NULL;
